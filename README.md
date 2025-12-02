@@ -1,5 +1,5 @@
-# 將之前生成的完整 HTML 遊戲程式碼寫入 .doc 檔，方便下載
-html_code = """<!DOCTYPE html>
+# 你的開心牧場
+
 <html>
 <head>
   <meta charset="UTF-8" />
@@ -229,10 +229,4 @@ function showWrongAnswers() {
 }
 </script>
 </body>
-</html>"""
-
-file_path = "/mnt/data/DHI_Game_Code.doc"
-with open(file_path, "w", encoding="utf-8") as f:
-    f.write(html_code)
-
-file_path
+</html>"
