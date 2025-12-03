@@ -104,12 +104,104 @@
     <p>努力泌乳中...</p>
   </div>
 
+  <button id="nextBtn" onclick="nextQuestion()">下一題</button>
   <button id="investBtn" onclick="invest()" class="hidden">投資（花費 40 萬，增加 10 頭牛）</button>
 
   <div id="rankBoard"></div>
   <div id="summaryBox" class="hidden"></div>
 </div>
 <script>
+/* ------------------------------
+   題庫（含你提供的所有情境）
+   每題 options 含 baseEffect（萬 NTD 單位）、msg、correct、reason
+------------------------------ */
+const scenarios = [
+  { description: "乳量下降 10%，體細胞上升至 380k。",
+    options:[
+      { text:"改善牛床乾燥度與墊料", baseEffect:10, msg:"體細胞下降，乳量回升！", correct:true, reason:"改善環境可降低乳房炎風險" },
+      { text:"提高精料比例以刺激乳量", baseEffect:-5, msg:"短期可能增加但增加疾病風險。", correct:false, reason:"精料過高會增加瘤胃酸中毒與健康風險" },
+      { text:"減少擠乳次數以讓乳房休息", baseEffect:-6, msg:"可能導致脹奶、細菌滋生。", correct:false, reason:"減少擠乳會增加乳房感染與產量下降風險" }
+    ]
+  },
+  { description: "泌乳初期（30 DIM）乳脂率僅 2.8%，疑似負能量平衡。",
+    options:[
+      { text:"提高乾物攝取量、改善日糧適口性", baseEffect:9, msg:"DMI 上升，乳脂正常化！", correct:true, reason:"增加能量攝取改善乳脂率" },
+      { text:"減少總飼料以促進瘤胃健康", baseEffect:-4, msg:"會惡化負能量平衡。", correct:false, reason:"降低飼料會使能量不足更嚴重" },
+      { text:"立即停用所有營養補充劑", baseEffect:-3, msg:"移除可能有益的補充劑，效果不佳。", correct:false, reason:"補充劑可能有助恢復能量平衡" }
+    ]
+  },
+  /* 以下為你新增的大量題目（我已把你提供的情境逐一加入） */
+  { description: "全場平均乳量 24 kg，牛群食慾下降。",
+    options:[
+      { text:"檢查環境溫度、通風與飲水系統是否有問題", baseEffect:8, msg:"發現熱緊迫/飲水問題並改善，DMI 回升。", correct:true, reason:"熱緊迫與飲水問題常導致食慾下降" },
+      { text:"立即提高精料比例大量補能", baseEffect:-5, msg:"短期可能增加但風險較高。", correct:false, reason:"盲目提高精料可能造成瘤胃問題" },
+      { text:"減少牛群活動量以省能量", baseEffect:-2, msg:"非根本解決方案。", correct:false, reason:"減少活動不會恢復食慾" }
+    ]
+  },
+  { description: "全場平均乳量 26 kg，部分牛隻體況偏瘦。",
+    options:[
+      { text:"評估個體體況，增加高能量補料與個別照護", baseEffect:7, msg:"體況回升，產量維持或改善。", correct:true, reason:"針對瘦牛補充能量與照護有助恢復" },
+      { text:"統一減少飼料以控制成本", baseEffect:-6, msg:"可能惡化體況。", correct:false, reason:"減少飼料會使瘦牛更差" },
+      { text:"增加羈留時間以減少群內競爭", baseEffect:3, msg:"可能有小幫助但非主要處方。", correct:false, reason:"管理調整有幫助但需配合營養" }
+    ]
+  },
+  { description: "全場平均乳量 31 kg，糞便偏稀，偶有腹脹現象。",
+    options:[
+      { text:"檢查並降低精料比例、增加纖維並分批餵食", baseEffect:9, msg:"糞便恢復正常，乳量穩定。", correct:true, reason:"高精料/低纖維常導致瘤胃酸中毒、稀便" },
+      { text:"增加抗菌藥物作為預防", baseEffect:-5, msg:"可能掩蓋症狀並影響菌群。", correct:false, reason:"不應先用抗生素替代飼糧調整" },
+      { text:"不做任何變動，觀察一週", baseEffect:-2, msg:"問題可能惡化。", correct:false, reason:"需積極改善飼糧與管理" }
+    ]
+  },
+  { description: "檸檬酸 80 mg/dL，乳脂率 3.0%，乳量 25 kg。",
+    options:[
+      { text:"檢查是否有乳房炎或熱緊迫，並做乳房檢查與環境改善", baseEffect:8, msg:"若為乳房炎或熱緊迫，對症處理可改善產量/品質。", correct:true, reason:"低檸檬酸可能與乳房炎或熱緊迫相關" },
+      { text:"增加精料以追高乳脂", baseEffect:-4, msg:"可能無效且有風險。", correct:false, reason:"盲目增加精料非最佳策略" },
+      { text:"立即替換全群乳牛品種", baseEffect:-10, msg:"極端且無效。", correct:false, reason:"非短期可行方案" }
+    ]
+  },
+  { description: "體細胞數 9 萬/mL，乳蛋白率 3.6%。",
+    options:[
+      { text:"維持現狀並加強常規監測（最佳選項）", baseEffect:5, msg:"數值屬佳，維持管理並監測即可。", correct:true, reason:"SCC 低且蛋白良好，過度干預反而有風險" },
+      { text:"大幅增加抗生素使用以追求更低SCC", baseEffect:-3, msg:"不必要且有抗藥性風險。", correct:false, reason:"過度用藥不可取" },
+      { text:"減少飼料以降低乳蛋白", baseEffect:-4, msg:"會造成產量與健康問題。", correct:false, reason:"不宜減少飼料" }
+    ]
+  },
+  { description: "槽乳體細胞數 18 萬/mL，乳房炎病例零星出現。",
+    options:[
+      { text:"加強擠乳衛生、隔離感染牛與檢測篩查", baseEffect:9, msg:"病例數下降，SCC 改善。", correct:true, reason:"控制感染源與擠乳衛生可有效降低乳房炎" },
+      { text:"提高奶站收購標準以懲罰農場", baseEffect:-2, msg:"對當下改善無助，且非內部措施。", correct:false, reason:"外部手段非解決根本" },
+      { text:"減少擠乳次數", baseEffect:-5, msg:"可能增加乳房問題。", correct:false, reason:"減少擠乳非良策" }
+    ]
+  },
+  { description: "體細胞數 28 萬/mL，場均日產乳量 27 kg。",
+    options:[
+      { text:"針對高SCC群體做 CMT 篩檢並實施局部處置", baseEffect:8, msg:"針對性治療可降低感染並提升產量。", correct:true, reason:"CMT 篩檢有助於找出感染牛" },
+      { text:"立即淘汰所有SCC高於10萬的牛", baseEffect:-8, msg:"過度且不經濟。", correct:false, reason:"不應大規模淘汰" },
+      { text:"完全停用飼料添加劑", baseEffect:-3, msg:"無直接關聯。", correct:false, reason:"非優先措施" }
+    ]
+  },
+  { description: "SCC 55 萬/mL，乳房腫脹。",
+    options:[
+      { text:"立即隔離並治療腫脹牛，檢查擠乳設備", baseEffect:10, msg:"針對性治療降低疼痛與感染，改善品質。", correct:true, reason:"腫脹+高SCC需即刻處理" },
+      { text:"提高日糧能量以彌補損失", baseEffect:-4, msg:"無法處理感染來源。", correct:false, reason:"營養調整非首選" },
+      { text:"延後擠乳以讓腫脹消退", baseEffect:-6, msg:"會增加乳房傷害與感染擴散。", correct:false, reason:"延後擠乳有害" }
+    ]
+  },
+  { description: "場均 SCC 85 萬/mL，乳量 29 kg，乳蛋白率 4.1%。",
+    options:[
+      { text:"做全場檢測、隔離感染牛並檢討擠乳流程與設備", baseEffect:9, msg:"改善感染源，長期可提升品質。", correct:true, reason:"高場均SCC需全面介入" },
+      { text:"提高精料以維持乳量", baseEffect:-5, msg:"可能掩蓋問題並惡化瘤胃負擔。", correct:false, reason:"非根本解決" },
+      { text:"忽略SCC，只關注乳量", baseEffect:-10, msg:"長期會導致處罰與品質下降。", correct:false, reason:"不可忽視品質指標" }
+    ]
+  },
+  { description: "乳蛋白率 2.9%，乳量 30 kg，乳脂正常。",
+    options:[
+      { text:"評估蛋白來源與MUN，可能補充高品質蛋白或調整RDP", baseEffect:7, msg:"改善蛋白率且非犧牲產量。", correct:true, reason:"MUN與蛋白率相關，需調整配方" },
+      { text:"減少糧食供給以提高濃度", baseEffect:-4, msg:"會降低產量。", correct:false, reason:"減少供給非良策" },
+      { text:"立即停止挤乳一次以測試數據", baseEffect:-2, msg:"無幫助且風險高。", correct:false, reason:"不建議" }
+    ]
+  }
+  // （為方便閱讀，後面題庫會在第3段接續）
 ];
 // ----- 遊戲狀態變數 -----
 let current = 0;
@@ -387,96 +479,6 @@ function showWrongAnswers() {
 })();
 </script>
 <script>
-  /* ------------------------------
-   題庫（含你提供的所有情境）
-   每題 options 含 baseEffect（萬 NTD 單位）、msg、correct、reason
------------------------------- */
-const scenarios = [
-  { description: "乳量下降 10%，體細胞上升至 380k。",
-    options:[
-      { text:"改善牛床乾燥度與墊料", baseEffect:10, msg:"體細胞下降，乳量回升！", correct:true, reason:"改善環境可降低乳房炎風險" },
-      { text:"提高精料比例以刺激乳量", baseEffect:-5, msg:"短期可能增加但增加疾病風險。", correct:false, reason:"精料過高會增加瘤胃酸中毒與健康風險" },
-      { text:"減少擠乳次數以讓乳房休息", baseEffect:-6, msg:"可能導致脹奶、細菌滋生。", correct:false, reason:"減少擠乳會增加乳房感染與產量下降風險" }
-    ]
-  },
-  { description: "泌乳初期（30 DIM）乳脂率僅 2.8%，疑似負能量平衡。",
-    options:[
-      { text:"提高乾物攝取量、改善日糧適口性", baseEffect:9, msg:"DMI 上升，乳脂正常化！", correct:true, reason:"增加能量攝取改善乳脂率" },
-      { text:"減少總飼料以促進瘤胃健康", baseEffect:-4, msg:"會惡化負能量平衡。", correct:false, reason:"降低飼料會使能量不足更嚴重" },
-      { text:"立即停用所有營養補充劑", baseEffect:-3, msg:"移除可能有益的補充劑，效果不佳。", correct:false, reason:"補充劑可能有助恢復能量平衡" }
-    ]
-  },
-  /* 以下為你新增的大量題目（我已把你提供的情境逐一加入） */
-  { description: "全場平均乳量 24 kg，牛群食慾下降。",
-    options:[
-      { text:"檢查環境溫度、通風與飲水系統是否有問題", baseEffect:8, msg:"發現熱緊迫/飲水問題並改善，DMI 回升。", correct:true, reason:"熱緊迫與飲水問題常導致食慾下降" },
-      { text:"立即提高精料比例大量補能", baseEffect:-5, msg:"短期可能增加但風險較高。", correct:false, reason:"盲目提高精料可能造成瘤胃問題" },
-      { text:"減少牛群活動量以省能量", baseEffect:-2, msg:"非根本解決方案。", correct:false, reason:"減少活動不會恢復食慾" }
-    ]
-  },
-  { description: "全場平均乳量 26 kg，部分牛隻體況偏瘦。",
-    options:[
-      { text:"評估個體體況，增加高能量補料與個別照護", baseEffect:7, msg:"體況回升，產量維持或改善。", correct:true, reason:"針對瘦牛補充能量與照護有助恢復" },
-      { text:"統一減少飼料以控制成本", baseEffect:-6, msg:"可能惡化體況。", correct:false, reason:"減少飼料會使瘦牛更差" },
-      { text:"增加羈留時間以減少群內競爭", baseEffect:3, msg:"可能有小幫助但非主要處方。", correct:false, reason:"管理調整有幫助但需配合營養" }
-    ]
-  },
-  { description: "全場平均乳量 31 kg，糞便偏稀，偶有腹脹現象。",
-    options:[
-      { text:"檢查並降低精料比例、增加纖維並分批餵食", baseEffect:9, msg:"糞便恢復正常，乳量穩定。", correct:true, reason:"高精料/低纖維常導致瘤胃酸中毒、稀便" },
-      { text:"增加抗菌藥物作為預防", baseEffect:-5, msg:"可能掩蓋症狀並影響菌群。", correct:false, reason:"不應先用抗生素替代飼糧調整" },
-      { text:"不做任何變動，觀察一週", baseEffect:-2, msg:"問題可能惡化。", correct:false, reason:"需積極改善飼糧與管理" }
-    ]
-  },
-  { description: "檸檬酸 80 mg/dL，乳脂率 3.0%，乳量 25 kg。",
-    options:[
-      { text:"檢查是否有乳房炎或熱緊迫，並做乳房檢查與環境改善", baseEffect:8, msg:"若為乳房炎或熱緊迫，對症處理可改善產量/品質。", correct:true, reason:"低檸檬酸可能與乳房炎或熱緊迫相關" },
-      { text:"增加精料以追高乳脂", baseEffect:-4, msg:"可能無效且有風險。", correct:false, reason:"盲目增加精料非最佳策略" },
-      { text:"立即替換全群乳牛品種", baseEffect:-10, msg:"極端且無效。", correct:false, reason:"非短期可行方案" }
-    ]
-  },
-  { description: "體細胞數 9 萬/mL，乳蛋白率 3.6%。",
-    options:[
-      { text:"維持現狀並加強常規監測", baseEffect:5, msg:"數值屬佳，維持管理並監測即可。", correct:true, reason:"SCC 低且蛋白良好，過度干預反而有風險" },
-      { text:"大幅增加抗生素使用以追求更低SCC", baseEffect:-3, msg:"不必要且有抗藥性風險。", correct:false, reason:"過度用藥不可取" },
-      { text:"減少飼料以降低乳蛋白", baseEffect:-4, msg:"會造成產量與健康問題。", correct:false, reason:"不宜減少飼料" }
-    ]
-  },
-  { description: "槽乳體細胞數 18 萬/mL，乳房炎病例零星出現。",
-    options:[
-      { text:"加強擠乳衛生、隔離感染牛與檢測篩查", baseEffect:9, msg:"病例數下降，SCC 改善。", correct:true, reason:"控制感染源與擠乳衛生可有效降低乳房炎" },
-      { text:"提高奶站收購標準以懲罰農場", baseEffect:-2, msg:"對當下改善無助，且非內部措施。", correct:false, reason:"外部手段非解決根本" },
-      { text:"減少擠乳次數", baseEffect:-5, msg:"可能增加乳房問題。", correct:false, reason:"減少擠乳非良策" }
-    ]
-  },
-  { description: "體細胞數 28 萬/mL，場均日產乳量 27 kg。",
-    options:[
-      { text:"針對高SCC群體做 CMT 篩檢並實施局部處置", baseEffect:8, msg:"針對性治療可降低感染並提升產量。", correct:true, reason:"CMT 篩檢有助於找出感染牛" },
-      { text:"立即淘汰所有SCC高於10萬的牛", baseEffect:-8, msg:"過度且不經濟。", correct:false, reason:"不應大規模淘汰" },
-      { text:"完全停用飼料添加劑", baseEffect:-3, msg:"無直接關聯。", correct:false, reason:"非優先措施" }
-    ]
-  },
-  { description: "SCC 55 萬/mL，乳房腫脹。",
-    options:[
-      { text:"立即隔離並治療腫脹牛，檢查擠乳設備", baseEffect:10, msg:"針對性治療降低疼痛與感染，改善品質。", correct:true, reason:"腫脹+高SCC需即刻處理" },
-      { text:"提高日糧能量以彌補損失", baseEffect:-4, msg:"無法處理感染來源。", correct:false, reason:"營養調整非首選" },
-      { text:"延後擠乳以讓腫脹消退", baseEffect:-6, msg:"會增加乳房傷害與感染擴散。", correct:false, reason:"延後擠乳有害" }
-    ]
-  },
-  { description: "場均 SCC 85 萬/mL，乳量 29 kg，乳蛋白率 4.1%。",
-    options:[
-      { text:"做全場檢測、隔離感染牛並檢討擠乳流程與設備", baseEffect:9, msg:"改善感染源，長期可提升品質。", correct:true, reason:"高場均SCC需全面介入" },
-      { text:"提高精料以維持乳量", baseEffect:-5, msg:"可能掩蓋問題並惡化瘤胃負擔。", correct:false, reason:"非根本解決" },
-      { text:"忽略SCC，只關注乳量", baseEffect:-10, msg:"長期會導致處罰與品質下降。", correct:false, reason:"不可忽視品質指標" }
-    ]
-  },
-  { description: "乳蛋白率 2.9%，乳量 30 kg，乳脂正常。",
-    options:[
-      { text:"評估蛋白來源與MUN，可能補充高品質蛋白或調整RDP", baseEffect:7, msg:"改善蛋白率且非犧牲產量。", correct:true, reason:"MUN與蛋白率相關，需調整配方" },
-      { text:"減少糧食供給以提高濃度", baseEffect:-4, msg:"會降低產量。", correct:false, reason:"減少供給非良策" },
-      { text:"立即停止擠乳一次以測試數據", baseEffect:-2, msg:"無幫助且風險高。", correct:false, reason:"不建議" }
-    ]
-  }
 /* ------------------------------
    題庫（延續前一段，這裡是後半部題目）
 ------------------------------ */
@@ -701,129 +703,9 @@ description: "乳量 31 kg，乳脂率 4.0%，乳蛋白率 3.9%，近日常精�
 </script>
 <!-- 錯題表區塊 -->
 <div id="wrongAnswersDiv" style="margin-top:20px;"></div>
-<script>
-  let fullPool = [...scenarios];
-// --- 前 6 題 --- //
-let first6 = fullPool.slice(0, 6).sort(() => Math.random() - 0.5);
-// --- 後 24 題（不重複）--- //
-let remain = fullPool.slice(6);
-remain = remain.sort(() => Math.random() - 0.5).slice(0, 24);
-// --- 合併題目順序 --- //
-let playList = [...first6, ...remain];
-let Qindex = 0;
-// ========= 題目選項隨機 =========
-function shuffleOptions(question) {
-    const ops = question.options.map((o, i) => ({ item: o, index: i }));
-    for (let i = ops.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [ops[i], ops[j]] = [ops[j], ops[i]];
-    }
-    question.options = ops.map(o => o.item);
-}
-// ========= 顯示飼養頭數 =========
-function placeHerdBox() {
-    let box = document.getElementById("herdBoxLive");
-    if (!box) {
-        box = document.createElement("div");
-        box.id = "herdBoxLive";
-        box.style.position = "fixed";
-        box.style.top = "10px";
-        box.style.left = "10px";
-        box.style.padding = "8px 12px";
-        box.style.background = "#fff7";
-        box.style.borderRadius = "6px";
-        box.style.fontWeight = "bold";
-        box.style.fontSize = "18px";
-        document.body.appendChild(box);
-    }
-    box.textContent = "飼養頭數：" + herdSize + " 頭";
-}
-// ========= 放大加粗收益 =========
-function enhanceIncome() {
-    let el = document.getElementById("score");
-    if (el) {
-        el.style.fontSize = "26px";
-        el.style.fontWeight = "900";
-        el.style.color = "#b22222";
-    }
-}
-// ========= 改寫 loadQuestion =========
-const originalLoad = window.loadQuestion;
-window.loadQuestion = function () {
-    if (Qindex >= playList.length) return endGame();
-    let q = playList[Qindex];
-    shuffleOptions(q);  // 亂序選項
-    // 套用原本渲染邏輯
-    originalLoad.call(this);
-    placeHerdBox();
-    enhanceIncome();
-};
-// ========= 改寫 choose（答題完成後自動進下一題）=========
-const originalChoose = window.choose;
-window.choose = function (idx) {
-    originalChoose.call(this, idx);
-    Qindex++;
-};
 </body>
 </html>
-<script>
-// === 附加程式碼：前6題亂序 + 後24題隨機出題 ===
-// 複製原題目陣列，不改動原本
-let allQuestions = [...questions];
-// 將前6題抽出並亂序
-let first6 = allQuestions.slice(0, 6).sort(() => Math.random() - 0.5);
-// 後19題題庫（排除前6題）
-let remainingQuestions = allQuestions.slice(6);
-remainingQuestions = remainingQuestions.sort(() => Math.random() - 0.5).slice(0, 4);
-// 合併成完整遊戲題目序列
-let gameQuestions = [...first6, ...remainingQuestions];
-let currentQuestionIndex = 0;
-// 載入題目函式（覆蓋原本 nextQuestion 功能）
-function loadNextQuestion() {
-  if (currentQuestionIndex >= gameQuestions.length) {
-    showGameEnd();
-    return;
-  }
-  let question = gameQuestions[currentQuestionIndex];
-    // 假設原本有一個 renderQuestion(question) 可以渲染題目
-  renderQuestion(question);
-  currentQuestionIndex++;
-}
-// 監控答題完成事件
-function onAnswerSubmitted() {
-  // 如果是前6題答完
-  if (currentQuestionIndex === 6) {
-    showFirst6Summary();
-  } else {
-    // 自動載入下一題
-    loadNextQuestion();
-  }
-}
-// 顯示前6題結算畫面
-function showFirst6Summary() {
-  const container = document.getElementById('question-container');
-  container.innerHTML = `<h2>前 6 題結算完成！</h2>
-                         <p>10秒後可繼續答題...</p>`;
-  // 10秒後出現「繼續經營」按鈕
-  setTimeout(() => {
-    const btn = document.createElement('button');
-    btn.textContent = '繼續經營';
-    btn.onclick = loadNextQuestion;
-    container.appendChild(btn);
-  }, 10000);
-}
-// 顯示遊戲結束畫面
-function showGameEnd() {
-  const container = document.getElementById('question-container');
-  container.innerHTML = `<h2>遊戲結束！</h2>
-                         <p>總結算內容...</p>`;
-}
-// 覆蓋原 submitAnswer 函式，確保答題後觸發附加邏輯
-const originalSubmit = window.submitAnswer;
-window.submitAnswer = function(questionId, answer) {
-  originalSubmit(questionId, answer); // 執行原本答題
-  onAnswerSubmitted(); // 觸發附加機制
-};
 // 初始載入第一題
 loadNextQuestion();
 </script>
+ 
