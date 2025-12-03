@@ -9,7 +9,6 @@
       padding: 20px;
       background: #fffaf0;
     }
-
     button {
       padding: 10px 15px;
       margin: 5px;
@@ -19,36 +18,29 @@
       border-radius: 6px;
       cursor: pointer;
     }
-
     button:hover {
       background: #45a049;
     }
-
     #game { max-width: 700px; display:none; }
     #identitySelect { margin-bottom:20px; }
-
     .hidden { display:none; }
-
     #loadingBox {
       display: none;
       text-align: center;
       margin: 20px 0;
       font-size: 20px;
     }
-
     #loadingBox img {
       width: 180px;
       display: block;
       margin: auto;
     }
-
     #rankBoard { 
       margin-top:20px; 
       background:#f0f0f0; 
       padding:15px; 
       border-radius:8px; 
     }
-
     #summaryBox{
       background:#eef7ff;
       padding:15px;
@@ -57,8 +49,81 @@
     }
   </style>
 </head>
+<script>
+// =====================
+//  附加機制整合版
+// =====================
+// 題目陣列來源為 scenarios（原程式碼內）
+// 這裡先複製題目
+let fullPool = [...scenarios];
+// --- 前 6 題 --- //
+let first6 = fullPool.slice(0, 6).sort(() => Math.random() - 0.5);
+// --- 後 24 題（不重複）--- //
+let remain = fullPool.slice(6);
+remain = remain.sort(() => Math.random() - 0.5).slice(0, 24);
+// --- 合併題目順序 --- //
+let playList = [...first6, ...remain];
+let Qindex = 0;
+// ========= 題目選項隨機 =========
+function shuffleOptions(question) {
+    const ops = question.options.map((o, i) => ({ item: o, index: i }));
+    for (let i = ops.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [ops[i], ops[j]] = [ops[j], ops[i]];
+    }
+    question.options = ops.map(o => o.item);
+}
+// ========= 顯示飼養頭數 =========
+function placeHerdBox() {
+    let box = document.getElementById("herdBoxLive");
+    if (!box) {
+        box = document.createElement("div");
+        box.id = "herdBoxLive";
+        box.style.position = "fixed";
+        box.style.top = "10px";
+        box.style.left = "10px";
+        box.style.padding = "8px 12px";
+        box.style.background = "#fff7";
+        box.style.borderRadius = "6px";
+        box.style.fontWeight = "bold";
+        box.style.fontSize = "18px";
+        document.body.appendChild(box);
+    }
+    box.textContent = "飼養頭數：" + herdSize + " 頭";
+}
+// ========= 放大加粗收益 =========
+function enhanceIncome() {
+    let el = document.getElementById("score");
+    if (el) {
+        el.style.fontSize = "26px";
+        el.style.fontWeight = "900";
+        el.style.color = "#b22222";
+    }
+}
+// ========= 改寫 loadQuestion =========
+const originalLoad = window.loadQuestion;
+window.loadQuestion = function () {
+    if (Qindex >= playList.length) return endGame();
+    let q = playList[Qindex];
+    shuffleOptions(q);  // 亂序選項
+    // 套用原本渲染邏輯
+    originalLoad.call(this);
+    placeHerdBox();
+    enhanceIncome();
+};
+// ========= 改寫 choose（答題完成後自動進下一題）=========
+const originalChoose = window.choose;
+window.choose = function (idx) {
+    originalChoose.call(this, idx);
+    Qindex++;
+};
+// ========= 刪除下一題按鈕 =========
+(function removeNextBtn() {
+    const btn = document.getElementById("nextBtn");
+    if (btn) btn.style.display = "none";
+})();
+</script>
 <body>
-
 <!-- 背景音樂 -->
 <audio id="bgm" loop autoplay>
   <source src="https://www.bensound.com/bensound-music/bensound-sunny.mp3" type="audio/mpeg">
@@ -732,9 +797,9 @@ description: "乳量 31 kg，乳脂率 4.0%，乳蛋白率 3.9%，近日常精�
 let allQuestions = [...questions];
 // 將前6題抽出並亂序
 let first6 = allQuestions.slice(0, 6).sort(() => Math.random() - 0.5);
-// 後24題題庫（排除前6題）
+// 後19題題庫（排除前6題）
 let remainingQuestions = allQuestions.slice(6);
-remainingQuestions = remainingQuestions.sort(() => Math.random() - 0.5).slice(0, 24);
+remainingQuestions = remainingQuestions.sort(() => Math.random() - 0.5).slice(0, 4);
 // 合併成完整遊戲題目序列
 let gameQuestions = [...first6, ...remainingQuestions];
 let currentQuestionIndex = 0;
