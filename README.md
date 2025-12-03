@@ -767,34 +767,35 @@ description: "乳量 31 kg，乳脂率 4.0%，乳蛋白率 3.9%，近日常精�
 <!-- 錯題表區塊 -->
 <div id="wrongAnswersDiv" style="margin-top:20px;"></div>
 
-// -----------------------------
-// 前 6 題後的第一次結算流程模組
-// -----------------------------
-
-
 <script>
+// --------------------------------------------------------
+// 覆寫 choose()，讓前 6 題不會自動跳題，也不會進入第 7 題
+// --------------------------------------------------------
 
 const originalChoose = choose;
 let firstSummaryDone = false;
 
 choose = function(idx) {
-  // 先執行原本 choose() 內部的得分、更新、錯題處理等
+  // 執行原本邏輯（算分、顯示結果、錯題紀錄）
   originalChoose(idx);
 
-  // 若還沒到前 6 題 → 正常流程
-  if (current <= 6 || firstSummaryDone) return;
-
-  // current == 7 表示剛答完第 6 題
-  if (current === 7 && !firstSummaryDone) {
-    firstSummaryDone = true;
+  // 如果前 6 題尚未做完，阻止自動下一題
+  if (!firstSummaryDone && current === 6) {
     showFirstSummary();
   }
 };
 
-// -----------------------------
+
+// --------------------------------------------------------
 // 第一次結算畫面
-// -----------------------------
+// --------------------------------------------------------
 function showFirstSummary() {
+  firstSummaryDone = true;
+
+  // 停掉原本 choose() 裡的 auto-next（5 秒跳題）
+  // 方法：把 current 固定住不讓它往下跑
+  current = 6;
+
   // 隱藏題目區
   document.getElementById("scenario").innerText = "📊 第一次結算（前 6 題）";
   document.getElementById("options").innerHTML = "";
@@ -811,21 +812,28 @@ function showFirstSummary() {
     <button id="continueBtn" style="display:none;margin-top:15px;">繼續經營 ➜</button>
   `;
 
-  // 10 秒後才顯示繼續經營按鈕
+  // 10 秒後出現按鈕
   setTimeout(() => {
-    document.getElementById("continueBtn").style.display = "block";
-    document.getElementById("continueBtn").onclick = continueAfterSummary;
+    const btn = document.getElementById("continueBtn");
+    btn.style.display = "block";
+    btn.onclick = continueAfterSummary;
   }, 10000);
 }
 
-// -----------------------------
-// 按「繼續經營」後恢復正常第 7 題開始
-// -----------------------------
+
+// --------------------------------------------------------
+// 點「繼續經營」 → 手動跳入第 7 題（index = 6 → 7）
+// --------------------------------------------------------
 function continueAfterSummary() {
   document.getElementById("summaryBox").classList.add("hidden");
-  loadQuestion(); // 載入第 7 題
+
+  current = 6;     // 確保現在停在第 6 題
+  current++;       // 手動跳到第 7 題
+
+  loadQuestion();
 }
 </script>
+
 
 </body>
 </html>
