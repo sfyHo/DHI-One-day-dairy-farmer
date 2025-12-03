@@ -537,9 +537,6 @@ scenarios.push(
       { text:"維持目前管理策略，定期觀察牛隻飲食精神狀態", baseEffect:-2, msg:"風險持續存在。", correct:false, reason:"需調整飼糧" },
 { text:"調整精粗比，增加有效粗纖維攝取", baseEffect:7, msg:"改善瘤胃穩定度並提高乳脂。", correct:true, reason:"低 P/F 可能有亞酸中毒風險" }
     ]
-  },
-
-  <!-- 錯題表區塊 -->
-<div id="wrongAnswersDiv" style="margin-top:20px;"></div>
+  }
 </body>
 </html>
