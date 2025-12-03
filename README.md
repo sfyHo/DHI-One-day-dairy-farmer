@@ -726,3 +726,64 @@ description: "乳量 31 kg，乳脂率 4.0%，乳蛋白率 3.9%，近日常精�
 <div id="wrongAnswersDiv" style="margin-top:20px;"></div>
 </body>
 </html>
+<script>
+// === 附加程式碼：前6題亂序 + 後24題隨機出題 ===
+// 複製原題目陣列，不改動原本
+let allQuestions = [...questions];
+// 將前6題抽出並亂序
+let first6 = allQuestions.slice(0, 6).sort(() => Math.random() - 0.5);
+// 後24題題庫（排除前6題）
+let remainingQuestions = allQuestions.slice(6);
+remainingQuestions = remainingQuestions.sort(() => Math.random() - 0.5).slice(0, 24);
+// 合併成完整遊戲題目序列
+let gameQuestions = [...first6, ...remainingQuestions];
+let currentQuestionIndex = 0;
+// 載入題目函式（覆蓋原本 nextQuestion 功能）
+function loadNextQuestion() {
+  if (currentQuestionIndex >= gameQuestions.length) {
+    showGameEnd();
+    return;
+  }
+  let question = gameQuestions[currentQuestionIndex];
+    // 假設原本有一個 renderQuestion(question) 可以渲染題目
+  renderQuestion(question);
+  currentQuestionIndex++;
+}
+// 監控答題完成事件
+function onAnswerSubmitted() {
+  // 如果是前6題答完
+  if (currentQuestionIndex === 6) {
+    showFirst6Summary();
+  } else {
+    // 自動載入下一題
+    loadNextQuestion();
+  }
+}
+// 顯示前6題結算畫面
+function showFirst6Summary() {
+  const container = document.getElementById('question-container');
+  container.innerHTML = `<h2>前 6 題結算完成！</h2>
+                         <p>10秒後可繼續答題...</p>`;
+  // 10秒後出現「繼續經營」按鈕
+  setTimeout(() => {
+    const btn = document.createElement('button');
+    btn.textContent = '繼續經營';
+    btn.onclick = loadNextQuestion;
+    container.appendChild(btn);
+  }, 10000);
+}
+// 顯示遊戲結束畫面
+function showGameEnd() {
+  const container = document.getElementById('question-container');
+  container.innerHTML = `<h2>遊戲結束！</h2>
+                         <p>總結算內容...</p>`;
+}
+// 覆蓋原 submitAnswer 函式，確保答題後觸發附加邏輯
+const originalSubmit = window.submitAnswer;
+window.submitAnswer = function(questionId, answer) {
+  originalSubmit(questionId, answer); // 執行原本答題
+  onAnswerSubmitted(); // 觸發附加機制
+};
+// 初始載入第一題
+loadNextQuestion();
+</script>
