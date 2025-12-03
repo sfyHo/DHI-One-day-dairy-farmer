@@ -540,7 +540,9 @@ scenarios.push(
   }
   )
   
+  </script>
+  
   <div id="wrongAnswersDiv" style="margin-top:20px;"></div>
-
+  
 </body>
 </html>
