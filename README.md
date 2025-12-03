@@ -215,7 +215,7 @@ function chooseWithEffect(idx) {
     document.getElementById("loadingBox").style.display = "none";
     document.getElementById("options").style.display = "block";
     choose(idx);
-  }, 3000);
+  }, 2000);
 }
 </script>
 
@@ -287,7 +287,7 @@ function choose(idx) {
     }
   }
 
-  // 小延遲後自動下一題或結束（2 秒）
+  // 小延遲後自動下一題或結束（5 秒）
   setTimeout(() => {
     current++;
     if (current >= scenarios.length) {
@@ -295,7 +295,7 @@ function choose(idx) {
     } else {
       loadQuestion();
     }
-  }, 2000);
+  }, 5000);
 }
 
 /* ------------------------------
