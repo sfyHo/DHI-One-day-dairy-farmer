@@ -114,7 +114,7 @@
   </div>
 
   <button id="nextBtn" onclick="nextQuestion()">下一題</button>
-  <button id="investBtn" onclick="invest()" class="hidden">投資（花費 50 萬，增加 10 頭牛）</button>
+  <button id="investBtn" onclick="invest()" class="hidden">投資（花費 40 萬，增加 10 頭牛）</button>
 
   <div id="rankBoard"></div>
   <div id="summaryBox" class="hidden"></div>
