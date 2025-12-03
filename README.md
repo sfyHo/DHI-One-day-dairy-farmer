@@ -438,7 +438,7 @@ const scenarios = [
   },
   { description: "體細胞數 9 萬/mL，乳蛋白率 3.6%。",
     options:[
-      { text:"維持現狀並加強常規監測（最佳選項）", baseEffect:5, msg:"數值屬佳，維持管理並監測即可。", correct:true, reason:"SCC 低且蛋白良好，過度干預反而有風險" },
+      { text:"維持現狀並加強常規監測", baseEffect:5, msg:"數值屬佳，維持管理並監測即可。", correct:true, reason:"SCC 低且蛋白良好，過度干預反而有風險" },
       { text:"大幅增加抗生素使用以追求更低SCC", baseEffect:-3, msg:"不必要且有抗藥性風險。", correct:false, reason:"過度用藥不可取" },
       { text:"減少飼料以降低乳蛋白", baseEffect:-4, msg:"會造成產量與健康問題。", correct:false, reason:"不宜減少飼料" }
     ]
@@ -475,7 +475,7 @@ const scenarios = [
     options:[
       { text:"評估蛋白來源與MUN，可能補充高品質蛋白或調整RDP", baseEffect:7, msg:"改善蛋白率且非犧牲產量。", correct:true, reason:"MUN與蛋白率相關，需調整配方" },
       { text:"減少糧食供給以提高濃度", baseEffect:-4, msg:"會降低產量。", correct:false, reason:"減少供給非良策" },
-      { text:"立即停止挤乳一次以測試數據", baseEffect:-2, msg:"無幫助且風險高。", correct:false, reason:"不建議" }
+      { text:"立即停止擠乳一次以測試數據", baseEffect:-2, msg:"無幫助且風險高。", correct:false, reason:"不建議" }
     ]
   }
 /* ------------------------------
