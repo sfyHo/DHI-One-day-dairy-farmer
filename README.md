@@ -767,5 +767,65 @@ description: "乳量 31 kg，乳脂率 4.0%，乳蛋白率 3.9%，近日常精�
 <!-- 錯題表區塊 -->
 <div id="wrongAnswersDiv" style="margin-top:20px;"></div>
 
+// -----------------------------
+// 前 6 題後的第一次結算流程模組
+// -----------------------------
+
+// 在 choose() 自動跳題之前攔截
+<script>
+
+const originalChoose = choose;
+let firstSummaryDone = false;
+
+choose = function(idx) {
+  // 先執行原本 choose() 內部的得分、更新、錯題處理等
+  originalChoose(idx);
+
+  // 若還沒到前 6 題 → 正常流程
+  if (current <= 6 || firstSummaryDone) return;
+
+  // current == 7 表示剛答完第 6 題
+  if (current === 7 && !firstSummaryDone) {
+    firstSummaryDone = true;
+    showFirstSummary();
+  }
+};
+
+// -----------------------------
+// 第一次結算畫面
+// -----------------------------
+function showFirstSummary() {
+  // 隱藏題目區
+  document.getElementById("scenario").innerText = "📊 第一次結算（前 6 題）";
+  document.getElementById("options").innerHTML = "";
+  document.getElementById("loadingBox").style.display = "none";
+
+  // 顯示簡單結算
+  const sb = document.getElementById("summaryBox");
+  sb.classList.remove("hidden");
+  sb.innerHTML = `
+    <h3>✨ 前 6 題小結 ✨</h3>
+    <p>目前收益：${score} 萬 NTD</p>
+    <p>目前飼養頭數：${herdSize} 頭</p>
+    <p style="color:gray;">10 秒後可繼續經營...</p>
+    <button id="continueBtn" style="display:none;margin-top:15px;">繼續經營 ➜</button>
+  `;
+
+  // 10 秒後才顯示繼續經營按鈕
+  setTimeout(() => {
+    document.getElementById("continueBtn").style.display = "block";
+    document.getElementById("continueBtn").onclick = continueAfterSummary;
+  }, 10000);
+}
+
+// -----------------------------
+// 按「繼續經營」後恢復正常第 7 題開始
+// -----------------------------
+function continueAfterSummary() {
+  document.getElementById("summaryBox").classList.add("hidden");
+  loadQuestion(); // 載入第 7 題
+}
+</script>
+
 </body>
 </html>
