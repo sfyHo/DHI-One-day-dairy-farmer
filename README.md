@@ -104,7 +104,6 @@
     <p>努力泌乳中...</p>
   </div>
 
-  <button id="nextBtn" onclick="nextQuestion()">下一題</button>
   <button id="investBtn" onclick="invest()" class="hidden">投資（花費 40 萬，增加 10 頭牛）</button>
 
   <div id="rankBoard"></div>
