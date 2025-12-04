@@ -229,7 +229,7 @@ function calculateEffectiveGain(baseEffect) {
   const diminishing = 100 / (100 + Math.abs(score) + 0.0001);
 	 // (B) herdSize 變動幅度對應收益比率
   const scale = Math.pow(herdSize / 60, 0.75); 
-  const eff = baseEffect *2* diminishing * scale;
+  const eff = baseEffect *3* diminishing * scale;
   return Math.round(eff);
 }
 /* ------------------------------
