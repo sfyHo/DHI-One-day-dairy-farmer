@@ -453,8 +453,8 @@ const scenarios = [
   { description: "全場平均乳量 20 kg，牛群食慾下降，P/F升高。",
     options:[
 { text:"立即提高精料比例大量補能", baseEffect:-5, msg:"短期可能增加但風險較高。", correct:false, reason:"盲目提高精料可能造成瘤胃問題" },
-{ text:"減少牛群活動量以節省能量", baseEffect:-2, msg:"非根本解決方案。", correct:false, reason:"減少活動不會恢復食慾" },
-{ text:"檢查環境溫度、通風與飲水系統是否有問題", baseEffect:8, msg:"發現熱緊迫/飲水問題並改善，DMI 回升。", correct:true, reason:"熱緊迫與飲水問題常導致食慾下降" }
+{ text:"減少牛群活動量以節省能量", baseEffect:-2, msg:"非根本解決方案。", correct:false, reason:"減少活動通常不會幫助恢復食慾" },
+{ text:"檢查環境溫度、通風與飲水系統是否有問題", baseEffect:8, msg:"發現熱緊迫/飲水問題並改善，DMI 回升。", correct:true, reason:"熱緊迫與飲水問題常導致食慾下降、P/F異常" }
     ]
   },
   { description: "全場平均乳量 26 kg，部分牛隻體況偏瘦。",
@@ -464,9 +464,9 @@ const scenarios = [
 { text:"增加搾乳前等待到搾乳完回舍進食的時間，分散回舍牛群以減少群內競爭", baseEffect:2, msg:"可能稍有幫助但非主要處方。", correct:false, reason:"管理調整對於部分弱勢牛可能有幫助但需配合營養，策略不完整" }
     ]
   },
-  { description: "檸檬酸 80 mg/dL，乳脂率 3.0%，乳量 25 kg。",
+  { description: "檸檬酸 80 mg/dL，乳脂率 2.9%，乳量 25 kg。",
     options:[
-      { text:"檢查是否有乳房炎或熱緊迫，並做乳房檢查與環境改善", baseEffect:8, msg:"若為乳房炎或熱緊迫，對症處理可改善產量/品質。", correct:true, reason:"低檸檬酸可能與乳房炎或熱緊迫相關" },
+      { text:"檢查是否有乳房炎或熱緊迫，並做乳房檢查與環境改善", baseEffect:8, msg:"若為乳房炎或熱緊迫，對症處理可改善產量/品質。", correct:true, reason:"低檸檬酸、低乳脂，可能與乳房炎或熱緊迫相關" },
       { text:"增加精料以追高乳脂，提高泌乳牛儲備能量", baseEffect:-4, msg:"可能無效且有風險。", correct:false, reason:"盲目增加精料非最佳策略" },
       { text:"立即替換高乳脂乳牛品種", baseEffect:-10, msg:"極端且無效。", correct:false, reason:"非短期可行方案" }
     ]
@@ -534,7 +534,7 @@ scenarios.push(
     ]
   },
 
-  { description: "乳糖 4.3%，乳量 25 kg，P/F=0.89，SCC 36 萬/mL。",
+  { description: "乳糖 4.1%，乳量 25 kg，P/F=0.96，SCC 36 萬/mL。",
     options:[
       { text:"增加精料以提升乳糖", baseEffect:-4, msg:"無法改善感染。", correct:false, reason:"低乳糖、稍高的SCC與P/F更可能與感染相關，多半不是精料問題" },
       { text:"減少飲水供應以濃縮乳汁", baseEffect:-6, msg:"危險且無效。", correct:false, reason:"造成飲水不足，不改善乳糖" },
@@ -542,10 +542,10 @@ scenarios.push(
     ]
   },
 
-  { description: "乳糖 4.8%，乳量 30 kg，P/F=0.74。",
+  { description: "乳糖 4.1%，乳量 25 kg，P/F=0.68，乳脂率 4.2%。",
     options:[
-      { text:"提高精料比例以增加蛋白攝取", baseEffect:-4, msg:"風險更高。", correct:false, reason:"精料過高會使 P/F 更低" },
-      { text:"維持目前管理策略，定期觀察牛隻飲食精神狀態", baseEffect:-2, msg:"風險持續存在。", correct:false, reason:"需調整飼糧" },
+      { text:"提高飼糧粗蛋白比例，以拉高乳蛋白", baseEffect:-1, msg:"無法解決根本問題。", correct:false, reason:"乳糖、P/F低可能表示負能量平衡，單純提高蛋白可能無法解決根本問題" },
+      { text:"維持目前管理策略，定期觀察牛隻飲食精神狀態", baseEffect:-3, msg:"風險持續存在。", correct:false, reason:"乳糖、P/F低可能表示負能量平衡，需調整飼糧" },
 { text:"調整精粗比，增加有效粗纖維攝取", baseEffect:7, msg:"改善瘤胃穩定度並提高乳脂。", correct:true, reason:"低 P/F 可能有亞酸中毒風險" }
     ]
   },
