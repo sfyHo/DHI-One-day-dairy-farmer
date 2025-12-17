@@ -594,40 +594,40 @@ scenarios.push(
       { text:"提高精料、確認飲水充足以降低 FFA", baseEffect:-4, msg:"反效果。", correct:false, reason:"高精料反而可能升高 FFA" }
     ]
   },
-{ description: "MUN 20 mg/dL，乳蛋白率 4.3%，乳量 25 kg，受孕率降低。",
+{ description: "MUN 23 mg/dL，乳蛋白率 4.3%，乳量 25 kg，受孕率降低。",
     options:[
       { text:" 增加非蛋白氮，或額外蛋白補充以嘗試維持目前高乳蛋白率", baseEffect:-4, msg:"可能惡化問題。", correct:false, reason:"精料過量造成 MUN 升高" },
 { text:" 在不增加蛋白攝取總量的前提下，降低瘤胃可分解蛋白比例", baseEffect:9, msg:"改善 MUN 與繁殖。", correct:true, reason:"降低瘤胃可分解蛋白可降低 MUN，可能解決繁殖下降問題" },
       { text:"停止補充精料，以芻料為主要飼糧", baseEffect:-3, msg:"不合理。", correct:false, reason:"需調整不是停止" }
     ]
   },
-  { description: "場均乳量26 kg，乳蛋白率 3.2%，乳脂率 4.5%，乳糖 4.7%。",
+  { description: "場均乳量26 kg，乳蛋白率 3.4%，乳脂率 2.8%，乳糖 4.7%。",
     options:[
       { text:"提高精料，增加容易吸收的蛋白質攝取以改善P/F值", baseEffect:-4, msg:"缺乏纖維的狀況可能會更嚴重。", correct:false, reason:"精料過高降低乳脂與健康" },
-	{ text:"提升乾草有效纖維量，並確認TMR混合的均勻狀況", baseEffect:8, msg:"改善瘤胃狀態。", correct:true, reason:"低P/F可能來自低纖維或挑食" },
-      { text:"增加飲水，並加強人員搾乳操作衛生", baseEffect:-3, msg:"無直接效益，可能忽略營養代謝問題。", correct:false, reason:"主因應非飲水或疾病" }
+	{ text:"提升乾草有效纖維量，並確認TMR混合的均勻狀況", baseEffect:8, msg:"改善瘤胃狀態。", correct:true, reason:"高P/F可能來自低纖維或挑食" },
+      { text:"增加飲水，並加強人員搾乳操作衛生", baseEffect:-3, msg:"無直接效益，可能忽略營養代謝問題。", correct:false, reason:"主因應非飲水或疾病，而是營養攝取的問題"}
     ]
   },
 
-  {description: "乳量 35 kg，乳蛋白率4.0%， 乳脂率3.9%，近日牛群易眼神渙散呆滯。",
+  {description: "乳量 19 kg，乳蛋白率2.7%， 乳脂率3.8%，近日牛群易眼神渙散呆滯。",
     options:[
-      { text:"進行代謝疾病、蹄病與環境壓力評估", baseEffect:9,
+      { text:"進行代謝疾病、蹄病與環境壓力綜合評估", baseEffect:9,
         msg:"找出健康問題，改善後恢復精神。", correct:true,
-        reason:"高產+精神差可能與臨床疾病相關，或者是缺乏能量" },
+        reason:"低產、精神差、低P/F，可能與臨床疾病相關，或者是缺乏能量" },
       { text:"提高場內通風效果，改善精神食欲 ", baseEffect:-5, msg:"可能無法改善疾病或營養問題。", correct:false,
         reason:"不能斷定為純粹的熱緊迫問題，對於改善降低P/F無幫助" },
-      { text:"減少芻料餵與量，尤其是含水量較高的鮮草，以提升粗纖維攝取量", baseEffect:-4, msg:"於改善P/F無益，問題持續或惡化。", correct:false,
+      { text:"減少芻料餵與量，尤其是含水量較高的鮮草，以提升粗纖維攝取量", baseEffect:-2, msg:"於改善P/F無益，問題持續或惡化。", correct:false,
         reason:"若問題是缺乏能量，單純增加芻料沒有直接幫助" }
     ]
   },
  {description: "乳量 12 kg，乳蛋白率4.1%， 乳脂率4.6%，SCC 21萬/mL。",
     options:[
-      { text:"給予全乳房抗生素治療以降低體細胞數", baseEffect:-3,
+      { text:"給予全乳房抗生素治療以降低體細胞數", baseEffect:-4,
         msg:"輕易使用抗生素，反而造成無效支出與防疫危機。", correct:false,
         reason:"21 萬屬正常偏高，不能單純以此決斷力及使用抗生素治療" },
-      { text:"提高精料比以及飲水，以提升乳量 ", baseEffect:-5, msg:"非精料補充的問題。", correct:false,
+      { text:"提高精料比以及飲水，以提升乳量 ", baseEffect:-3, msg:"非精料補充的問題。", correct:false,
         reason:"情境非能量不足，不能因此增加精料" },
-      { text:"漸退式安排該牛進入乾乳", baseEffect:-4, msg:"處置合理，牛隻能更快進入下一個健康泌乳期", correct:true,
+      { text:"漸退式安排該牛進入乾乳", baseEffect:4, msg:"處置合理，牛隻能更快進入下一個健康泌乳期", correct:true,
         reason:"泌乳後期牛應考慮逐漸乾乳，休息恢復乳腺組織" }
     ]
   },
@@ -639,7 +639,7 @@ scenarios.push(
 { text:"確認搾乳設備與牛床清潔", baseEffect:9, msg:"改善乳品質。", correct:true, reason:"FFA、SCC與設備衛生高度相關" },
     ]
   },
- { description: "BHB 130μmol/L，乳量 25 kg，乳脂率 3.2%，牛群體況偏瘦。",
+ { description: "BHB 130μmol/L，乳量 25 kg，乳脂率 3.1%，牛群體況偏瘦。",
     options:[
       { text:"減少精料給與，避免瘤胃鼓脹惡化", baseEffect:-6, msg:"能量缺乏狀況更糟。", correct:false, reason:"需要提升能量" },
 { text:"增加能量供應，嘗試添加啤酒酵母", baseEffect:8, msg:"改善能量平衡。", correct:true, reason:"高 BHB 多為能量不足（酮症），啤酒酵母提升飼糧適口性" },
